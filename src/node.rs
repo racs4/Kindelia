@@ -140,7 +140,10 @@ pub enum Message {
   },
   AskBlock {
     bhash: Hash
-  }
+  },
+  // PutPeers {
+  //   addrs: Vec<Address>,
+  // },
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -794,6 +797,9 @@ pub fn node_handle_message(node: &mut Node, addr: Address, msg: &Message) {
             println!("ask missing: {} {:x}", count, missing);
             udp_send(&mut node.socket, addr, &Message::AskBlock { bhash: missing })
           }
+          for peer in peers {
+            node_see_peer(node, *peer);
+          }
         }
       }
     }
@@ -1013,9 +1019,20 @@ fn log_heartbeat(node: &Node) {
     missing_count += 1;
   }
 
+  let mana_cur = node.runtime.get_mana() as i64;
+  let mana_lim = node.runtime.get_mana_limit() as i64;
+  let size_cur = node.runtime.get_size() as i64;
+  let size_lim = node.runtime.get_size_limit() as i64;
+  let mana_avail = mana_lim - mana_cur;
+  let size_avail = size_lim - size_cur;
+  debug_assert!(size_avail >= 0);
+  debug_assert!(mana_avail >= 0);
+
+  let peers_num = node.peers.len();
+
   let log = object!{
     event: "heartbeat",
-    peers: node.peers.len(),
+    peers: { num: peers_num },
     tip: {
       height: tip_height,
       // target: u256_to_hex(tip_target),
@@ -1027,7 +1044,18 @@ fn log_heartbeat(node: &Node) {
       pending: pending_count,
       included: included_count,
     },
-    total_mana: node.runtime.get_mana() as u64,
+    runtime: {
+      mana: {
+        current: mana_cur,
+        limit: mana_lim,
+        available: mana_avail,
+      },
+      size: {
+        current: size_cur,
+        limit: size_lim,
+        available: size_avail,
+      }
+    }
   };
 
   println!("{}", log);

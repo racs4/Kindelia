@@ -4,7 +4,6 @@
 #![warn(unused_variables)]
 #![warn(clippy::style)]
 #![allow(clippy::let_and_return)]
-//use std::fmt::format;
 use std::sync::mpsc::SyncSender;
 
 use serde_json::json;
