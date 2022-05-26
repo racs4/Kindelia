@@ -277,18 +277,16 @@ pub fn deserialize_bytes(size: u128, bits: &BitVec, index: &mut u128) -> Vec<u8>
 
 pub fn serialize_message(message: &Message, bits: &mut BitVec) {
   match message {
-    //Message::PutPeers { peers } => {
-      //serialize_fixlen(4, &u256(0), bits);
-      //serialize_list(serialize_address, peers, bits);
-    //}
     Message::PutBlock { block, istip, peers } => {
-      serialize_fixlen(4, &u256(0), bits);
+      let code = &u256(0);
+      serialize_fixlen(4, code, bits);
       serialize_block(block, bits);
       serialize_fixlen(1, &(if *istip { u256(1) } else { u256(0) }), bits);
       serialize_list(serialize_peer, peers, bits);
     }
     Message::AskBlock { bhash } => {
-      serialize_fixlen(4, &u256(1), bits);
+      let code = &u256(1);
+      serialize_fixlen(4, code, bits);
       serialize_hash(bhash, bits);
     }
   }
@@ -311,7 +309,11 @@ pub fn deserialize_message(bits: &BitVec, index: &mut u128) -> Message {
       let bhash = deserialize_hash(bits, index);
       Message::AskBlock { bhash }
     }
-    _ => panic!("Bad message code.")
+    // 2 => {
+    //   let addrs = deserialize_list(deserialize_address, bits, index);
+    //   Message::PutPeers { addrs }
+    // }
+    _ => panic!("Bad message code.") // TODO: handle properly
   }
 }
 
