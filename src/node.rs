@@ -1040,11 +1040,11 @@ fn log_heartbeat(node: &Node) {
       included: included_count,
     },
     runtime: {
-      mana: {
-        current: mana_cur,
-        limit: mana_lim,
-        available: mana_avail,
-      },
+      // mana: {
+      //   current: mana_cur,
+      //   limit: mana_lim,
+      //   available: mana_avail,
+      // },
       size: {
         current: size_cur,
         limit: size_lim,
