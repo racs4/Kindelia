@@ -1,0 +1,9 @@
+!(Fst t) {
+  !(Fst $(Tuple2 a b)) = 
+  &{a.0 a.1} = a;
+  a.0
+} = #0
+
+{
+  $(IO.done !(Fst $(Tuple2 #1 #2)))
+}

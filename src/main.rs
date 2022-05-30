@@ -4,10 +4,10 @@
 #![allow(unused_variables)]
 #![allow(clippy::style)]
 
-mod util;
+mod bits;
 mod hvm;
 mod node;
-mod bits;
+mod util;
 
 use primitive_types::U256;
 
@@ -27,11 +27,12 @@ const KINDELIA_DIR_ENV: &str = "KINDELIA_DIR";
 const KINDELIA_HOME_DEFAULT: &str = ".kindelia";
 
 fn main() -> Result<(), String> {
-  return run_cli();
+  println!("{}", test_runtime_rollback(50, 49));
+  Ok(())
 
   //start_node(std::env::current_dir().unwrap(), Some("example/simple.kindelia".to_string()));
   //return Ok(());
-  
+
   //hvm::test("./example/example.kindelia");
   //return Ok(());
 }
@@ -111,9 +112,9 @@ fn start_node(base_dir: PathBuf, file: Option<String>) {
 
   // Spawns the input thread
   //let input_thread = thread::spawn(move || {
-    //if ui {
-      //input_loop(&input_1);
-    //}
+  //if ui {
+  //input_loop(&input_1);
+  //}
   //});
 
   // Joins all threads
@@ -124,22 +125,21 @@ fn start_node(base_dir: PathBuf, file: Option<String>) {
 
 fn get_base_dir(dir_cli: Option<String>) -> Result<PathBuf, String> {
   let dir_env = std::env::var(KINDELIA_DIR_ENV);
-  let dir_env =
-    match dir_env {
-      Ok(dir) => Some(dir),
-      Err(err) =>
-        if let std::env::VarError::NotPresent = err {
-          None
-        } else {
-          return Err(format!("{} environment variable is not valid: '{}'", KINDELIA_DIR_ENV, err))
-        }
-    };
+  let dir_env = match dir_env {
+    Ok(dir) => Some(dir),
+    Err(err) => {
+      if let std::env::VarError::NotPresent = err {
+        None
+      } else {
+        return Err(format!("{} environment variable is not valid: '{}'", KINDELIA_DIR_ENV, err));
+      }
+    }
+  };
 
   let mut dir_home = dirs::home_dir().unwrap();
   dir_home.push(KINDELIA_HOME_DEFAULT);
 
-  let base_dir =
-    dir_cli.or(dir_env).map(|x| PathBuf::from(x)).unwrap_or(dir_home);
+  let base_dir = dir_cli.or(dir_env).map(|x| PathBuf::from(x)).unwrap_or(dir_home);
 
   Ok(base_dir)
 }

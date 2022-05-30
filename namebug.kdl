@@ -1,0 +1,65 @@
+// ============================================================================
+// Tree
+
+$(Leaf)
+$(Node k v lft rgt)
+
+// v1
+!(AddChild cond key t) {
+  !(AddChild #1 key $(Node k v l r)) = $(Node k v l !(AddAcc key r))
+  !(AddChild #0 key $(Node k v l r)) = $(Node k v !(AddAcc key l) r)
+} = #0
+
+// v2 (just the same as v1, but with a different name)
+!(AddAccChild cond key t) {
+  !(AddAccChild #1 key $(Node k v l r)) = $(Node k v l !(AddAcc key r))
+  !(AddAccChild #0 key $(Node k v l r)) = $(Node k v !(AddAcc key l) r)
+} = #0
+
+!(AddEq cond key t) {
+  !(AddEq #1 key $(Node k v l r)) = $(Node k (+ v #1) l r)
+  !(AddEq #0 key $(Node k v l r)) = 
+    &{k.0 k.1} = k;
+    &{key.0 key.1} = key;
+    !(AddAccChild (> key.0 k.0) key.1 $(Node k.1 v l r))
+} = #0
+
+!(AddAcc key t) {
+  !(AddAcc key $(Node k v lft rgt)) =
+    &{k.0 k.1} = k;
+    &{key.0 key.1} = key;
+    !(AddEq (== k.0 key.0) key.1 $(Node k.1 v lft rgt))
+  !(AddAcc key $(Leaf)) = $(Node key #1 $(Leaf) $(Leaf))
+} = #0
+
+// ============================================================================
+// Tree Contract
+
+!(State action) {
+  !(State $(Add n)) =
+    $(IO.take @t 
+    $(IO.save !(AddAcc n t) @~
+    $(IO.done #0)))
+  !(State $(Get)) =
+    !(IO.load @x 
+    $(IO.done x))
+} = $(Leaf)
+
+// ===========================================================================
+// Runs
+
+// Change line 24 to 'AddChild' or 'AddAccChild' and see the difference
+
+// Adding first node
+{
+  $(IO.call 'State' $(Tuple1 $(Add #1)) @~
+  $(IO.call 'State' $(Tuple1 $(Get)) @x
+  $(IO.done x)))
+}
+
+// Adding second node
+{
+  $(IO.call 'State' $(Tuple1 $(Add #2)) @~
+  $(IO.call 'State' $(Tuple1 $(Get)) @x
+  $(IO.done x)))
+}

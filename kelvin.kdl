@@ -1,0 +1,35 @@
+$(Succ p)
+$(Zero)
+!(Add n) {
+  !(Add n) = $(Succ n)
+} = #0
+
+!(Sub n) {
+  !(Sub $(Succ p)) = p
+  !(Sub $(Zero)) = $(Zero)
+} = #0
+
+!(Store action) {
+  !(Store $(Add)) =
+    $(IO.take @l 
+    $(IO.save !(Add l) @~
+    $(IO.done #0)))
+  !(Store $(Sub)) =
+    $(IO.take @l 
+    $(IO.save !(Sub l) @~
+    $(IO.done #0)))
+  !(Store $(Get)) = !(IO.load @l $(IO.done l))
+} = $(Zero)
+
+{
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Add)) @~
+  $(IO.call 'Store' $(Tuple1 $(Get)) @x
+  $(IO.done x))))))))))
+}

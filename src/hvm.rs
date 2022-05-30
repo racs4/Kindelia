@@ -13,6 +13,8 @@ use crate::bits;
 use crate::dbg_println;
 use crate::util::U128_SIZE;
 
+use std::collections::hash_map::DefaultHasher;
+
 // Types
 // -----
 
@@ -614,7 +616,7 @@ impl Heap {
       use std::io::Write;
       let file_path = path.join(format!("{}.{}.bin", uuid, name));
       //format!("{}/{}.{}.bin", path, uuid, name);
-      println!("saving: {:?}", file_path);
+      //println!("saving: {:?}", file_path);
       let mut file = std::fs::OpenOptions::new().append(true).create(true).open(file_path)?;
       file.write_all(&util::u128s_to_u8s(buffer))?;
       return Ok(());
@@ -1003,7 +1005,7 @@ impl Runtime {
   pub fn run_statement(&mut self, statement: &Statement) {
     match statement {
       Statement::Fun { name, args, func, init } => {
-        println!("- fun {} {}", u128_to_name(*name), args.len());
+        // println!("- fun {} {}", u128_to_name(*name), args.len());
         if let Some(func) = build_func(func, true) {
           self.set_arity(*name, args.len() as u128);
           self.define_function(*name, func);
@@ -1013,7 +1015,7 @@ impl Runtime {
         }
       }
       Statement::Ctr { name, args } => {
-        println!("- ctr {} {}", u128_to_name(*name), args.len());
+        // println!("- ctr {} {}", u128_to_name(*name), args.len());
         self.set_arity(*name, args.len() as u128);
         self.draw();
       }
@@ -1033,7 +1035,7 @@ impl Runtime {
               let size_dif = size_end - size_ini;
               // dbg!(size_end, size_dif, size_lim);
               if size_end <= size_lim {
-                println!("- run {} ({} mana, {} size)", done_code, mana_dif, size_dif);
+                // println!("- run {} ({} mana, {} size)", done_code, mana_dif, size_dif);
                 self.draw();
               } else {
                 println!("- run fail: exceeded size limit {}/{}", size_end, size_lim);
@@ -1075,6 +1077,7 @@ impl Runtime {
     //println!("- tick self.curr={}, included={:?} absorber={:?} deleted={:?} rollback={}", self.curr, included, absorber, deleted, view_rollback(&self.back));
     self.back = rollback;
     if included {
+      
       self.heap[self.curr as usize].save_buffers().expect("Error saving buffers."); // TODO: persistence-WIP
       if let Some(deleted) = deleted {
         if let Some(absorber) = absorber {
@@ -2967,4 +2970,76 @@ pub fn test_statements_from_code(code: &str) {
 
 pub fn test(file: &str) {
   test_statements_from_code(&std::fs::read_to_string(file).expect("file not found"));
+}
+
+fn test_heap_checksum(fn_names: &[&str], rt: &mut Runtime) -> u64 {
+  let fn_ids = fn_names.iter().map(|x| name_to_u128(x)).collect::<Vec<u128>>();
+  let mut hasher = DefaultHasher::new();
+  for fn_id in fn_ids {
+    let term_lnk = rt.read_disk(fn_id);
+    if let Some(term_lnk) = term_lnk {
+      let term = rt.show_term(term_lnk);
+      term.hash(&mut hasher);
+    }
+  }
+  let res = hasher.finish();
+  res
+}
+
+pub fn test_runtime_rollback() {
+  let pre_code = "
+    $(Succ p)
+    $(Zero)
+    !(Add n) {
+      !(Add n) = $(Succ n)
+    } = #0
+    
+    !(Sub n) {
+      !(Sub $(Succ p)) = p
+      !(Sub $(Zero)) = $(Zero)
+    } = #0
+    
+    !(Store action) {
+      !(Store $(Add)) =
+        $(IO.take @l 
+        $(IO.save !(Add l) @~
+        $(IO.done #0)))
+      !(Store $(Sub)) =
+        $(IO.take @l 
+        $(IO.save !(Sub l) @~
+        $(IO.done #0)))
+      !(Store $(Get)) = !(IO.load @l $(IO.done l))
+    } = $(Zero)
+  ";
+  let code = "
+    {
+      $(IO.call 'Count' $(Tuple1 $(Inc #1)) @~
+      $(IO.call 'Count' $(Tuple1 $(Get)) @x
+      $(IO.done x)))
+    }
+    
+    {
+     $(IO.call 'Store' $(Tuple1 $(Add)) @~
+     $(IO.call 'Store' $(Tuple1 $(Get)) @x
+     $(IO.done x)))
+    }
+  ";
+  let fn_names = ["Count", "IO.load", "Store", "Sub", "Add"];
+  let mut rt = init_runtime();
+  let init_tick = rt.get_tick();
+  
+  
+  let total_tick = 50;
+  rt.run_statements_from_code(pre_code);
+  for i in 0..total_tick {
+    rt.run_statements_from_code(code);
+    rt.tick();
+    println!("{}", test_heap_checksum(&fn_names, &mut rt));
+  }
+  println!("{}", test_heap_checksum(&fn_names, &mut rt));
+  rt.rollback(init_tick + 49);
+  println!("{}", test_heap_checksum(&fn_names, &mut rt));
+
+  // rt.rollback(init_tick + 8);
+  // test_heap_checksum(&fn_names, &mut rt);
 }

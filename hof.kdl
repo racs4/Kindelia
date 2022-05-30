@@ -1,0 +1,77 @@
+$(Nil)
+$(Cons x xs)
+
+!(Fold f i l) {
+  !(Fold ~ i $(Nil)) = i
+  !(Fold f i $(Cons x xs)) = &{f0 f1} = f; ((f0 x) !(Fold f1 i xs))
+} = #0
+
+!(Map f l) {
+  !(Map f $(Cons x xs)) = &{f0 f1} = f; $(Cons (f0 x) !(Map f1 xs))
+  !(Map ~ $(Nil)) = $(Nil)
+} = #0
+
+!(Filter.aux cond f l) = {
+  !(Filter.aux #1 f ($Cons x xs)) = $(Cons x !(Filter f xs))
+  !(Filter.aux #0 f ($Cons x xs)) = !(Filter f xs)
+} = #0
+
+!(Filter f l) {
+  !(Filter f $(Cons x xs)) = &{f0 f1} = f; !(Filter.aux (f0 x) f1 xs)
+  !(Filter ~ $(Nil)) = $(Nil)
+} = #0
+
+!(TakeWhile f l) {
+  !(TakeWhile f $(Cons x xs)) = &{f0 f1} = f; !(TakeWhile f0 xs)
+  !(TakeWhile ~ $(Nil)) = $(Nil)
+} = #0
+
+!(State action) {
+  !(State $(Add k)) = 
+    $(IO.take @l
+    $(IO.save $(Cons k l) @~
+    $(IO.done #0)))
+  !(State $(Get)) = 
+    !(IO.load @l
+    $(IO.done l))
+  !(State $(M f)) = 
+    $(IO.take @l
+    $(IO.save !(Map f l) @~
+    $(IO.done #0)))
+} = $(Nil)
+
+!(Sum1 n) {
+  !(Sum1 n) = (+ n #1)
+} = #0
+
+!(Wrap f n) {
+  !(Wrap f n) = (f n)
+} = #0
+
+!(Append l1 l2) {
+  !(Append $(Nil)) l2 = l2
+  !(Append l1 $(Nil)) = l1
+  !(Append $(Cons x xs)) l2 = $(Cons x !(Append xs l2))
+} = #0
+
+{
+  $(IO.call 'State' $(Tuple1 $(Add $(Cons #1 $(Nil)))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(M @x !(Map @n (+ n #1) x))) @~
+  $(IO.call 'State' $(Tuple1 $(Get)) @x
+  $(IO.done x)))))))))))))))))))
+}
