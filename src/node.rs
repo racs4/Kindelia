@@ -430,10 +430,10 @@ pub fn new_node(kindelia_path: PathBuf) -> (SyncSender<Request>, Node) {
 
   // TODO: move out to config file
   let default_peers: Vec<Address> = vec![
-    "167.71.249.16:42000",
-    "167.71.254.138:42000",
-    "167.71.242.43:42000",
-    "167.71.255.151:42000",
+    "143.244.179.61:42000",
+    "164.92.214.78:42000",
+    "159.223.39.129:42000",
+    "159.65.148.6:42000",
   ].iter().map(|x| read_address(x)).collect::<Vec<Address>>();
 
   let seen_at = get_time();
