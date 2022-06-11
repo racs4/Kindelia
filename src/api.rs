@@ -213,9 +213,11 @@ pub fn api_loop(node_query_sender: SyncSender<NodeRequest>) {
     let app = app.map(|reply| warp::reply::with_header(reply, "Access-Control-Allow-Origin", "*"));
 
     let listener_v4 = TcpListener::bind("0.0.0.0:8000").await.unwrap();
-    let listener_v6 = TcpListener::bind("[::]:8000").await.unwrap();
+    // let listener_v6 = TcpListener::bind("[::]:8000").await.unwrap();
     let incoming_connections =
-      TcpListenerStream::new(listener_v4).merge(TcpListenerStream::new(listener_v6));
+      TcpListenerStream::new(listener_v4)
+        // .merge(TcpListenerStream::new(listener_v6))
+        ;
 
     warp::serve(app).run_incoming(incoming_connections).await;
   });
