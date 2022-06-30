@@ -369,7 +369,7 @@ pub fn bytes_to_body(bytes: &[u8]) -> Body {
 }
 
 pub fn code_to_body(code: &str) -> Body {
-  let (_rest, acts) = crate::hvm::read_statements(code);
+  let (_rest, acts) = crate::hvm::read_statements(code).unwrap(); // TODO: handle error
   let bits = serialized_statements(&acts);
   let body = bytes_to_body(&bitvec_to_bytes(&bits));
   return body;
@@ -428,7 +428,7 @@ pub fn new_node(kindelia_path: PathBuf) -> (SyncSender<Request>, Node) {
     receiver   : query_receiver,
   };
 
-  // UDP_PORT is the local port, it doesn't change existing node ports
+  // TODO: move out to config file
   let default_peers: Vec<Address> = vec![
     "143.244.179.61:42000",
     "164.92.214.78:42000",
@@ -441,20 +441,15 @@ pub fn new_node(kindelia_path: PathBuf) -> (SyncSender<Request>, Node) {
     return node_see_peer(&mut node, Peer { address: *address, seen_at });
   });
 
-  node_see_peer(&mut node, Peer {
-    address: Address::IPv4 { val0: 127, val1: 0, val2: 0, val3: 1, port: UDP_PORT },
-    seen_at: get_time(),
-  });
-  node_see_peer(&mut node, Peer {
-    address: Address::IPv4 { val0: 127, val1: 0, val2: 0, val3: 1, port: UDP_PORT + 1 },
-    seen_at: get_time(),
-  });
-  node_see_peer(&mut node, Peer {
-    address: Address::IPv4 { val0: 127, val1: 0, val2: 0, val3: 1, port: UDP_PORT + 2 },
-    seen_at: get_time(),
-  });
+  // TODO: For testing purposes. Remove later.
+  for &peer_port in try_ports.iter() {
+    if peer_port != port {
+      let address = Address::IPv4 { val0: 127, val1: 0, val2: 0, val3: 1, port: peer_port };
+      node_see_peer(&mut node, Peer { address: address, seen_at })
+    }
+  }
 
-  return (query_sender, node);
+  (query_sender, node)
 }
 
 pub fn new_miner_comm() -> SharedMinerComm {
