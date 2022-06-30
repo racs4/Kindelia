@@ -7,6 +7,7 @@ use rand::seq::IteratorRandom;
 use sha3::Digest;
 
 use std::collections::HashMap;
+use std::fmt::Display;
 use std::net::*;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -146,6 +147,22 @@ pub enum Message {
   // },
 }
 
+impl Display for Message {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    match self {
+      Message::PutBlock { block, istip, peers } => {
+        write!(f, "PutBlock {{ block: {:x} }}", hash_block(block) )
+      },
+      Message::AskBlock { bhash } => {
+        write!(f, "AskBlock {{ bhash: {:x} }}", bhash)
+      },
+      // Message::PutPeers { addrs } => {
+      //   write!(f, "PutPeers {{ addrs: {:?} }}", addrs)
+      // },
+    }
+  }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Address {
   IPv4 {
@@ -154,6 +171,16 @@ pub enum Address {
     val2: u8,
     val3: u8,
     port: u16,
+  }
+}
+
+impl Display for Address {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    match self {
+      Address::IPv4 { val0, val1, val2, val3, port } => {
+        write!(f, "{}.{}.{}.{}:{}", val0, val1, val2, val3, port)
+      }
+    }
   }
 }
 
@@ -665,6 +692,7 @@ pub fn get_longest_chain(node: &Node, num: Option<usize>) -> Vec<U256> {
 
 pub fn node_receive_message(node: &mut Node) {
   for (addr, msg) in udp_receive(&mut node.socket) {
+    println!("Received message from {}: {}", addr, msg);
     node_handle_message(node, addr, &msg);
   }
 }
@@ -783,11 +811,13 @@ pub fn node_handle_message(node: &mut Node, addr: Address, msg: &Message) {
           let bhash = hash_block(&block);
           if !node.block.contains_key(&bhash) {
             let mut missing = bhash;
+            println!("- missing block: {:x}", missing);
             // Finds the first ancestor that wasn't downloaded yet
             let mut count = 0;
             while node.waiting.contains_key(&missing) {
               count += 1;
               missing = node.waiting[&missing].prev;
+              println!("- missing block: {:x}", missing);
             }
             println!("ask missing: {} {:x}", count, missing);
             udp_send(&mut node.socket, addr, &Message::AskBlock { bhash: missing })
