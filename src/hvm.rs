@@ -1049,7 +1049,7 @@ pub fn remove_sign(statement: &Statement) -> Statement {
       Statement::Fun {
         name: *name,
         args: args.clone(),
-        func: func.clone(), 
+        func: func.clone(),  
         init: init.clone(),
         sign: None,
       }
