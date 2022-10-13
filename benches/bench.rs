@@ -9,7 +9,7 @@ use test::Bencher;
 #[bench]
 fn tree(b: &mut Bencher) {
   b.iter(|| {
-    std::thread::sleep(std::time::Duration::from_millis(30));
+    std::thread::sleep(std::time::Duration::from_millis(70));
   })
 }
 
