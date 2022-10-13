@@ -8,16 +8,11 @@ extern crate test;
 
 // examples:
 
-// #[bench]
-// fn bench_fib_10(b: &mut Bencher) {
-//   b.iter(|| {
-//     // let _ = fib(10);
-//   });
-// }
+#[bench]
+fn test(b: &mut Bencher) {
+  b.iter(|| {
+    // let _ = fib(10);
+  });
+}
 
-// #[bench]
-// fn bench_fib_20(b: &mut Bencher) {
-//   b.iter(|| {
-//     // let _ = fib(20);
-//   });
-// }
+
