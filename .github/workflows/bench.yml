@@ -26,6 +26,7 @@ jobs:
         with:
           path: ./cache
           key: ${{ runner.os }}-benchmark
+      - uses: Swatinem/rust-cache@v1
       # Run `github-action-benchmark` action
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
