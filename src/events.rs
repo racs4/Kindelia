@@ -9,7 +9,7 @@ use warp::{Filter, Rejection, Reply};
 use crate::api::Hash;
 use crate::config::{UiConfig, WsConfig};
 use crate::net::{ProtoAddr, ProtoComm};
-use crate::node::{Block, Peer, Node};
+use crate::node::{Block, Node, Peer};
 
 // TODO: rename and organize structs and constructors
 
@@ -764,11 +764,12 @@ pub async fn client_connection(
 //
 
 // TODO
-pub fn spawn_event_handlers<A: ProtoAddr>(
+pub fn spawn_event_handlers<A: ProtoAddr + 'static>(
   ws_config: WsConfig,
   ui_config: Option<UiConfig>,
-  _addr: A
-) -> (std::sync::mpsc::Sender<NodeEventType>, Vec<std::thread::JoinHandle<()>>) {
+  addr: A,
+) -> (std::sync::mpsc::Sender<NodeEventType>, Vec<std::thread::JoinHandle<()>>)
+{
   let (event_tx, event_rx) = std::sync::mpsc::channel::<NodeEventType>();
   let (ws_tx, _ws_rx) = tokio::sync::broadcast::channel(ws_config.buffer_size);
 
@@ -796,6 +797,8 @@ pub fn spawn_event_handlers<A: ProtoAddr>(
           println!("{}", event);
         }
       }
+      let event = NodeEvent { addr, event };
+      println!("{}", serde_json::to_string(&event).unwrap());
     }
   });
 
