@@ -10,6 +10,9 @@ jobs:
   cargo:
     if: github.event.pull_request.draft == false
     uses: ./.github/workflows/cargo.yml
+  bench:
+    if: github.event.pull_request.draft == false
+    uses: ./.github/workflows/bench.yml
   # tests:
   #   needs: [cargo]
   #   uses: ./.github/workflows/tests.yml
