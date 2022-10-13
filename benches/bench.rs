@@ -4,7 +4,7 @@ extern crate test;
 // use rust_example::fib;
 
 // use kindelia::
-// use test::Bencher;
+use test::Bencher;
 
 // examples:
 
