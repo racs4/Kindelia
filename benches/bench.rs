@@ -9,20 +9,20 @@ use test::Bencher;
 #[bench]
 fn tree(b: &mut Bencher) {
   b.iter(|| {
-    
+    std::thread::sleep(std::time::Duration::from_millis(1000));
   })
 }
 
 #[bench]
 fn bench_fib_10(b: &mut Bencher) {
-    b.iter(|| {
-        // let _ = fib(10);
-    });
+  b.iter(|| {
+    // let _ = fib(10);
+  });
 }
 
 #[bench]
 fn bench_fib_20(b: &mut Bencher) {
-    b.iter(|| {
-        // let _ = fib(20);
-    });
+  b.iter(|| {
+    // let _ = fib(20);
+  });
 }
