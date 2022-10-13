@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1665686970308,
+  "lastUpdate": 1665687642298,
   "repoUrl": "https://github.com/racs4/Kindelia",
   "entries": {
     "Rust Benchmark": [
@@ -125,6 +125,48 @@ window.BENCHMARK_DATA = {
             "name": "tree",
             "value": 70088761,
             "range": "± 32366",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rheidner.achiles@gmail.com",
+            "name": "rheidner",
+            "username": "racs4"
+          },
+          "committer": {
+            "email": "rheidner.achiles@gmail.com",
+            "name": "rheidner",
+            "username": "racs4"
+          },
+          "distinct": true,
+          "id": "0003cb6ae18ee304a4663c0a9c991db906a308de",
+          "message": "test cache",
+          "timestamp": "2022-10-13T15:57:40-03:00",
+          "tree_id": "e811a61794916b97a1542c5753aec21cbbef09c5",
+          "url": "https://github.com/racs4/Kindelia/commit/0003cb6ae18ee304a4663c0a9c991db906a308de"
+        },
+        "date": 1665687641517,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "bench_fib_10",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bench_fib_20",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "tree",
+            "value": 70096040,
+            "range": "± 44285",
             "unit": "ns/iter"
           }
         ]
