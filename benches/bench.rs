@@ -7,7 +7,7 @@ extern crate test;
 use test::Bencher;
 
 #[bench]
-fn tree(b: &mut Bencher) {
+fn tree(b: &mut Bencher) { 
   b.iter(|| {
     std::thread::sleep(std::time::Duration::from_millis(70));
   })
