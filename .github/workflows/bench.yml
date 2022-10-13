@@ -2,7 +2,7 @@
 name: Bench
 
 on:
-  push:
+  workflow_call:
 
 permissions:
   # deployments permission to deploy GitHub pages website
