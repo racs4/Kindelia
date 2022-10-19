@@ -10,9 +10,5 @@ use test::Bencher;
 
 #[bench]
 fn test(b: &mut Bencher) {
-  b.iter(|| {
-    // let _ = fib(10);
-  });
+  b.iter(|| std::thread::sleep(std::time::Duration::from_millis(10)));
 }
-
-
