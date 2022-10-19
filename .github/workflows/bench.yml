@@ -15,7 +15,7 @@ jobs:
     name: Performance regression check
     runs-on: ubuntu-latest
     steps: 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2 
       - run: rustup toolchain update nightly && rustup default nightly
       # Run benchmark with `go test -bench` and stores the output to a file
       - uses: Swatinem/rust-cache@v1
