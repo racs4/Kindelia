@@ -2,7 +2,7 @@ name: Continuous Benchmark
 
 on:
   workflow_dispatch:
-push:
+  push:
 
 jobs:
   bench:
