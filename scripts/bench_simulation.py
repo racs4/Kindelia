@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import subprocess
 import time
+from typing import List
 
 
 @dataclass
@@ -93,7 +94,7 @@ class RunConfig:
     n: int
     warmup: int
     execution_time: int
-    benchers: list[Bencher]
+    benchers: List[Bencher]
 
 
 def run(config: RunConfig):
@@ -172,7 +173,7 @@ def main():
         "--execution_time", type=int, default=60
     )
 
-    benchers: list[Bencher] = [UncleRate(), FailedMining()]
+    benchers: List[Bencher] = [UncleRate(), FailedMining()]
 
     args = parser.parse_args()
 
