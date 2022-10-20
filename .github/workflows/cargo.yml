@@ -20,7 +20,7 @@ jobs:
           override: true
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
-        with:
+        with: 
           command: check
  
   cargo_test:
