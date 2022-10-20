@@ -95,6 +95,7 @@ class RunConfig:
     execution_time: int
     benchers: list[Bencher]
 
+
 def run(config: RunConfig):
     # create the list of benchmarkers
 
@@ -123,7 +124,7 @@ def run(config: RunConfig):
 
         # gets output from stdout
         data = process.stdout.read().decode("utf-8").strip()
-        print(data)
+
         # for each line of the output
         for line in data.splitlines():
             # try to read an event from this line
@@ -151,7 +152,8 @@ def run(config: RunConfig):
             'unit': bench_info.unit
         })
 
-    print(json.dumps(result), file=sys.stderr)
+    with open("bench_simulation_result.json", "w") as file:
+        file.write(json.dumps(result))
 
 
 def main():
