@@ -22,7 +22,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
-
+ 
   cargo_test:
     name: 🧪 Cargo Test
     runs-on: ${{ matrix.os }}
