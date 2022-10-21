@@ -129,6 +129,33 @@ pub struct Body {
 }
 
 impl Body {
+  /// Fills block body with first transactions from iterator that fit.
+  pub fn fill_from<I, T>(transactions: I) -> Body
+  where
+    I: IntoIterator<Item = T>,
+    T: Into<Transaction>,
+  {
+    let mut body_vec = vec![0];
+    let mut tx_count = 0;
+    for transaction in transactions.into_iter() {
+      let transaction = transaction.into();
+      let tx_len = transaction.data.len();
+      if tx_len == 0 {
+        continue;
+      }
+      if tx_count + 1 > 255 {
+        break;
+      }
+      if add_transaction_to_body_vec(&mut body_vec, &transaction).is_err()
+      {
+        break;
+      }
+      tx_count += 1;
+    }
+    body_vec[0] = tx_count as u8;
+    Body { data: body_vec }
+  }
+
   /// Build a body from a sequence of transactions.
   /// Fails if they can't fit in a block body.
   pub fn from_transactions_iter<I, T>(transactions: I) -> Result<Body, ()>
@@ -543,6 +570,22 @@ pub fn new_block(prev: U256, time: u128, meta: u128, body: Body) -> Block {
   return Block { prev, time, meta, body, hash };
 }
 
+/// Puts transaction inside `body_vec` if space is suficient
+pub fn add_transaction_to_body_vec(
+  body_vec: &mut Vec<u8>,
+  transaction: &Transaction,
+) -> Result<(), String> {
+  let tx_len = transaction.data.len();
+  let len_info = transaction.encode_length();
+  if body_vec.len() + 2 + tx_len > MAX_BODY_SIZE {
+    return Err("No enough space in block".to_string());
+  }
+  body_vec.push(len_info.0);
+  body_vec.push(len_info.1);
+  body_vec.extend_from_slice(&transaction.data);
+  Ok(())
+}
+
 /// Converts a block body to a vector of transactions.
 pub fn extract_transactions(body: &Body) -> Vec<Transaction> {
   let mut transactions = Vec::new();
@@ -665,13 +708,15 @@ pub fn miner_loop(
 // ----
 
 impl<C: ProtoComm> Node<C> {
-  fn new(
+  pub fn new(
     data_path: PathBuf,
     network_id: u64,
     initial_peers: Vec<C::Address>,
     comm: C,
     miner_comm: Option<MinerCommunication>,
-    #[cfg(feature = "events")] event_emitter: mpsc::Sender<events::NodeEventType>,
+    #[cfg(feature = "events")] event_emitter: mpsc::Sender<
+      events::NodeEventType,
+    >,
   ) -> (mpsc::SyncSender<NodeRequest<C>>, Self) {
     let (query_sender, query_receiver) = mpsc::sync_channel(1);
 
@@ -1434,27 +1479,8 @@ impl<C: ProtoComm> Node<C> {
   /// Builds the body to be mined.
   /// To convert back to a vector of transactions, use `extract_transactions()`.
   pub fn build_body_from_pool(&self) -> Body {
-    let mut body_vec = vec![0];
-    let mut tx_count = 0;
-    for (transaction, _score) in self.pool.iter() {
-      let tx_len = transaction.data.len();
-      if tx_len == 0 {
-        continue;
-      }
-      let len_info = transaction.encode_length(); // number we will store as the length
-      if body_vec.len() + 2 + tx_len > MAX_BODY_SIZE {
-        break;
-      }
-      if tx_count + 1 > 255 {
-        break;
-      }
-      body_vec.push(len_info.0);
-      body_vec.push(len_info.1);
-      body_vec.extend_from_slice(&transaction.data);
-      tx_count += 1;
-    }
-    body_vec[0] = tx_count as u8;
-    return Body { data: body_vec };
+    let txs = self.pool.iter().map(|(tx, _score)| tx.clone());
+    Body::fill_from(txs)
   }
 
   fn log_heartbeat(&self) {
@@ -1641,8 +1667,11 @@ pub fn start<C: ProtoComm + 'static>(
   #[cfg(feature = "events")]
   let event_tx = {
     let addr = comm.get_addr();
-    let (event_tx, event_thrds) =
-      events::spawn_event_handlers(config.ws.unwrap_or_default(), config.ui, addr);
+    let (event_tx, event_thrds) = events::spawn_event_handlers(
+      config.ws.unwrap_or_default(),
+      config.ui,
+      addr,
+    );
     threads.extend(event_thrds);
     event_tx
   };
