@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1666370031874,
+  "lastUpdate": 1666370033196,
   "repoUrl": "https://github.com/racs4/Kindelia",
   "entries": {
     "Rust Benchmark": {
@@ -82,6 +82,44 @@ window.BENCHMARK_DATA = {
             "value": 191337,
             "range": "± 17194",
             "unit": "ns/iter"
+          }
+        ]
+      }
+    },
+    "Simulation Benchmark": {
+      "fdb1f0f52bf352b2c1b82e79eec215a3d01576f2": {
+        "commit": {
+          "author": {
+            "email": "rheidner.achiles@gmail.com",
+            "name": "rheidner",
+            "username": "racs4"
+          },
+          "committer": {
+            "email": "rheidner.achiles@gmail.com",
+            "name": "rheidner",
+            "username": "racs4"
+          },
+          "distinct": true,
+          "id": "fdb1f0f52bf352b2c1b82e79eec215a3d01576f2",
+          "message": "dasda",
+          "timestamp": "2022-10-21T13:25:58-03:00",
+          "tree_id": "7950efb8b3d6b19e3831c14a3aecebf4eb05acc1",
+          "url": "https://github.com/racs4/Kindelia/commit/fdb1f0f52bf352b2c1b82e79eec215a3d01576f2",
+          "original_ref": "bench-event",
+          "parent": "beb3a173635a1a1d53be18ab02372688da8009c8"
+        },
+        "date": 1666370032817,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Uncle Rate",
+            "value": 0.034818941504178275,
+            "unit": "Percent"
+          },
+          {
+            "name": "Failed Mining",
+            "value": 703.0772980501392,
+            "unit": "Logs"
           }
         ]
       }
