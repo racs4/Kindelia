@@ -33,7 +33,7 @@ jobs:
         with:
           name: Rust Benchmark 
           # What benchmark tool the output.txt came from
-          tool: "cargo"
+          tool: "cargo" 
           # Where the output from the benchmark tool is stored
           output-file-path: output.txt
           # Workflow will fail when an alert happens
