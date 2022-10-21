@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1666370033196,
+  "lastUpdate": 1666370409777,
   "repoUrl": "https://github.com/racs4/Kindelia",
   "entries": {
     "Rust Benchmark": {
@@ -84,6 +84,50 @@ window.BENCHMARK_DATA = {
             "unit": "ns/iter"
           }
         ]
+      },
+      "aaecbb7eabc1d2a036e27d6cc8528726267f84d7": {
+        "commit": {
+          "author": {
+            "email": "rheidner.achiles@gmail.com",
+            "name": "rheidner",
+            "username": "racs4"
+          },
+          "committer": {
+            "email": "rheidner.achiles@gmail.com",
+            "name": "rheidner",
+            "username": "racs4"
+          },
+          "distinct": true,
+          "id": "aaecbb7eabc1d2a036e27d6cc8528726267f84d7",
+          "message": "csd",
+          "timestamp": "2022-10-21T13:36:53-03:00",
+          "tree_id": "86859432d3f4c940314a49210b97da2e20fc6e60",
+          "url": "https://github.com/racs4/Kindelia/commit/aaecbb7eabc1d2a036e27d6cc8528726267f84d7",
+          "original_ref": "bench-ci",
+          "parent": "d113c744cbb49a0bd6c669a428dc3b7c9dca7a28"
+        },
+        "date": 1666370409226,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "max_message_serialize",
+            "value": 31280,
+            "range": "± 27",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "max_message_deserialize",
+            "value": 34069,
+            "range": "± 46",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "deserialize_block_with_txs",
+            "value": 118873,
+            "range": "± 180",
+            "unit": "ns/iter"
+          }
+        ]
       }
     },
     "Simulation Benchmark": {
@@ -127,6 +171,7 @@ window.BENCHMARK_DATA = {
   },
   "branches": {
     "bench-ci-testing": "f9468955f163ca327f58eb674e55a6fa31bcdeef",
-    "bench-event": "fdb1f0f52bf352b2c1b82e79eec215a3d01576f2"
+    "bench-event": "fdb1f0f52bf352b2c1b82e79eec215a3d01576f2",
+    "bench-ci": "aaecbb7eabc1d2a036e27d6cc8528726267f84d7"
   }
 }
