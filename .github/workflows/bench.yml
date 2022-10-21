@@ -32,7 +32,7 @@ jobs:
       # Run `github-action-benchmark` action
       - name: Store rust benchmark result
         uses: racs4/github-action-benchmark@v1
-        with:
+        with: 
           name: Rust Benchmark 
           # What benchmark tool the output.txt came from
           tool: "cargo"
