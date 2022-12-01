@@ -3,8 +3,10 @@ name: Continuous Benchmark
 on:
   workflow_dispatch:
   push:
+    branches: ["master", "dev"]
   pull_request:
-    types: [opened, review_requested, ready_for_review]
+    types: [opened, review_requested, synchronize, ready_for_review]
+    branches: ["master", "dev"]
 
 jobs:
   bench:
